@@ -1,0 +1,12 @@
+{
+  "domain": "openclaw_conversation",
+  "name": "OpenClaw Conversation Agent",
+  "codeowners": ["@kasparkastl"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/eulennest/ha-openclaw-conversation",
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "requirements": [],
+  "version": "0.1.0"
+}
