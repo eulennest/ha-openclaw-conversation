@@ -19,7 +19,9 @@ _LOGGER = logging.getLogger(__name__)
 
 SERVICE_GENERATE_RESPONSE = "generate_response"
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities
+) -> bool:
     """Set up OpenClaw conversation from config entry."""
     try:
         agent = OpenClawConversationAgent(hass, entry)
@@ -27,9 +29,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         
         _LOGGER.info(
             "OpenClaw Conversation Agent registered successfully. "
-            "Entry ID: %s, Agent ID: %s",
-            entry.entry_id,
-            conversation.async_get_agent_info(hass, entry)
+            "Entry ID: %s",
+            entry.entry_id
         )
         return True
     except Exception as err:
