@@ -21,11 +21,20 @@ SERVICE_GENERATE_RESPONSE = "generate_response"
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up OpenClaw conversation from config entry."""
-    agent = OpenClawConversationAgent(hass, entry)
-    conversation.async_set_agent(hass, entry, agent)
-    
-    _LOGGER.info("OpenClaw Conversation Agent registered")
-    return True
+    try:
+        agent = OpenClawConversationAgent(hass, entry)
+        conversation.async_set_agent(hass, entry, agent)
+        
+        _LOGGER.info(
+            "OpenClaw Conversation Agent registered successfully. "
+            "Entry ID: %s, Agent ID: %s",
+            entry.entry_id,
+            conversation.async_get_agent_info(hass, entry)
+        )
+        return True
+    except Exception as err:
+        _LOGGER.error("Failed to set up OpenClaw Conversation Agent: %s", err, exc_info=True)
+        return False
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload OpenClaw conversation."""
@@ -43,11 +52,24 @@ class OpenClawConversationAgent(conversation.AbstractConversationAgent):
         self._manager_url = entry.data["manager_url"].rstrip("/")
         self._device_token = entry.data["device_token"]
         self._session_id: str | None = None
+        
+        _LOGGER.debug(
+            "OpenClawConversationAgent initialized with manager_url=%s",
+            self._manager_url
+        )
 
     @property
-    def supported_languages(self) -> list[str]:
+    def attribution(self) -> dict | None:
+        """Return attribution information."""
+        return {
+            "name": "OpenClaw (Kaspar)",
+            "url": "https://github.com/eulennest/ha-openclaw-conversation",
+        }
+
+    @property
+    def supported_languages(self) -> list[str] | Literal["*"]:
         """Return list of supported languages."""
-        return ["de", "en"]  # German & English
+        return "*"  # Support all languages (Kaspar can handle any)
 
     async def async_process(
         self, user_input: conversation.ConversationInput
